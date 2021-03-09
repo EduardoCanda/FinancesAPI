@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using FinancesAPI.Data;
 using FinancesAPI.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace FinancesAPI.Controllers
 {
@@ -26,7 +27,7 @@ namespace FinancesAPI.Controllers
         {
             var finance = context.Finances.FirstOrDefault(x => x.Id == id);
 
-            if (finance.Id != id)
+            if (finance == null)
                 return NotFound("Finança não encontrada");
 
             return Ok(finance);
@@ -60,19 +61,18 @@ namespace FinancesAPI.Controllers
         [Route("")]
         public async Task<ActionResult<Finance>> UpdateFinance(int id, [FromBody] Finance model, [FromServices] DataContext context)
         {
-            var finance = context.Finances.FirstOrDefault(x => x.Id == id);
-
-            if (finance.Id != id)
-                return NotFound("Finança não encontrada");
+            if (id != model.Id)
+                return NotFound(new { message = "Finança não encontrada" });
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            finance.SetCategory(model.Category);
-            finance.SetValue(model.Value);
+            model.UpdatedDate = DateTime.Now;
 
             try
             {
+                context.Entry<Finance>(model).State = EntityState.Modified;
+
                 await context.SaveChangesAsync();
 
                 return Ok(model);

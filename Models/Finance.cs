@@ -10,18 +10,20 @@ namespace FinancesAPI.Models
         {
             Category = category;
             Value = value;
-            Date = DateTime.Now;
+            CreatedDate = DateTime.Now;
+            UpdatedDate = null;
         }
 
         [Key]
-        public int Id { get; }
+        public int Id { get; set;}
 
         [Required(ErrorMessage = "A categoria é obrigatória")]
-        public ECategory Category { get; private set; }
+        public ECategory Category { get; set; }
 
         [Required(ErrorMessage = "O valor é obrigatório")]
-        public decimal Value { get; private set; }
-        public DateTime Date { get; }
+        public decimal Value { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
 
         public void SetValue(decimal value)
         {
