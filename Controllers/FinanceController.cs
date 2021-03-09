@@ -58,24 +58,26 @@ namespace FinancesAPI.Controllers
 
 
         [HttpPut]
-        [Route("")]
+        [Route("{id:int}")]
         public async Task<ActionResult<Finance>> UpdateFinance(int id, [FromBody] Finance model, [FromServices] DataContext context)
         {
-            if (id != model.Id)
-                return NotFound(new { message = "Finança não encontrada" });
+            var finance = context.Finances.FirstOrDefault(x => x.Id == id);
+
+            if (finance == null)
+                return NotFound("Finança não encontrada");
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            model.UpdatedDate = DateTime.Now;
+            finance.UpdatedDate = DateTime.Now;
 
             try
             {
-                context.Entry<Finance>(model).State = EntityState.Modified;
+                context.Entry<Finance>(finance).State = EntityState.Modified;
 
                 await context.SaveChangesAsync();
 
-                return Ok(model);
+                return Ok(finance);
             }
             catch (Exception error)
             {
