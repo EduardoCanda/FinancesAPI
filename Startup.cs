@@ -1,3 +1,4 @@
+using System;
 using FinancesAPI.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,9 +24,7 @@ namespace FinancesAPI
 
             services.AddControllers();
 
-            // add db in memory
-            services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Database"));
-            services.AddScoped<DataContext, DataContext>();
+            AddConnectionDatabase(services);
 
             services.AddSwaggerGen(c =>
             {
@@ -52,6 +51,14 @@ namespace FinancesAPI
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private void AddConnectionDatabase(IServiceCollection services) {
+
+            services.AddScoped<DataContext, DataContext>();
+
+            // add db in memory
+            services.AddDbContext<DataContext>(opt => opt.UseInMemoryDatabase("Database"));
         }
     }
 }

@@ -17,7 +17,7 @@ namespace FinancesAPI.Controllers
         [Route("")]
         public ActionResult<List<Finance>> GetFinances([FromServices] DataContext context)
         {
-            var finances = (context.Finances.ToList());
+            var finances = context.Finances.ToList();
             return Ok(finances);
         }
 
@@ -28,7 +28,7 @@ namespace FinancesAPI.Controllers
             var finance = context.Finances.FirstOrDefault(x => x.Id == id);
 
             if (finance == null)
-                return NotFound("Finança não encontrada");
+                return NotFound(new {Message = "Finança não encontrada"});
 
             return Ok(finance);
         }
@@ -47,7 +47,7 @@ namespace FinancesAPI.Controllers
 
                 await context.SaveChangesAsync();
 
-                return Ok(model);
+                return Ok(new {Message = "Finança cadastrada com sucesso!"});
             }
             catch (Exception error)
             {
@@ -61,6 +61,7 @@ namespace FinancesAPI.Controllers
         [Route("{id:int}")]
         public async Task<ActionResult<Finance>> UpdateFinance(int id, [FromBody] Finance model, [FromServices] DataContext context)
         {
+            
             var finance = context.Finances.FirstOrDefault(x => x.Id == id);
 
             if (finance == null)
@@ -77,7 +78,7 @@ namespace FinancesAPI.Controllers
 
                 await context.SaveChangesAsync();
 
-                return Ok(finance);
+                return Ok(new {Message = "Finança atualizada com sucesso!"});
             }
             catch (Exception error)
             {
