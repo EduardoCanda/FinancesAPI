@@ -9,33 +9,39 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FinancesAPI.Controllers
 {
-    [Route("finances")]
-    public class FinancaController : ControllerBase
+    [Route("Finance")]
+    public class FinanceController : ControllerBase
     {
+        private readonly DataContext _context;
+
+        public FinanceController(DataContext context)
+        {
+            _context = context;
+        }
 
         [HttpGet]
         [Route("")]
-        public ActionResult<List<Finance>> GetFinances([FromServices] DataContext context)
+        public ActionResult<List<Finance>> GetFinances()
         {
-            var finances = context.Finances.ToList();
+            var finances = _context.Finances.ToList();
             return Ok(finances);
         }
 
         [HttpGet]
         [Route("{id:int}")]
-        public ActionResult<Finance> GetFinanceById(int id, [FromServices] DataContext context)
+        public ActionResult<Finance> GetFinanceById(int id)
         {
-            var finance = context.Finances.FirstOrDefault(x => x.Id == id);
+            var finance = _context.Finances.FirstOrDefault(x => x.Id == id);
 
             if (finance == null)
-                return NotFound(new {Message = "Finança não encontrada"});
+                return NotFound(new { Message = "Finança não encontrada" });
 
             return Ok(finance);
         }
 
         [HttpPost]
         [Route("")]
-        public async Task<ActionResult<Finance>> AddFinance([FromBody] Finance model, [FromServices] DataContext context)
+        public async Task<ActionResult<Finance>> AddFinance([FromBody] Finance model)
         {
 
             if (!ModelState.IsValid)
@@ -43,11 +49,11 @@ namespace FinancesAPI.Controllers
 
             try
             {
-                context.Finances.Add(model);
+                _context.Finances.Add(model);
 
-                await context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-                return Ok(new {Message = "Finança cadastrada com sucesso!"});
+                return Ok(new { Message = "Finança cadastrada com sucesso!" });
             }
             catch (Exception error)
             {
@@ -56,13 +62,12 @@ namespace FinancesAPI.Controllers
 
         }
 
-
         [HttpPut]
         [Route("{id:int}")]
-        public async Task<ActionResult<Finance>> UpdateFinance(int id, [FromBody] Finance model, [FromServices] DataContext context)
+        public async Task<ActionResult<Finance>> UpdateFinance(int id, [FromBody] Finance model)
         {
-            
-            var finance = context.Finances.FirstOrDefault(x => x.Id == id);
+
+            var finance = _context.Finances.FirstOrDefault(x => x.Id == id);
 
             if (finance == null)
                 return NotFound("Finança não encontrada");
@@ -74,11 +79,11 @@ namespace FinancesAPI.Controllers
 
             try
             {
-                context.Entry<Finance>(finance).State = EntityState.Modified;
+                _context.Entry<Finance>(finance).State = EntityState.Modified;
 
-                await context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-                return Ok(new {Message = "Finança atualizada com sucesso!"});
+                return Ok(new { Message = "Finança atualizada com sucesso!" });
             }
             catch (Exception error)
             {

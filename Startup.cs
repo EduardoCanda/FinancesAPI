@@ -1,4 +1,3 @@
-using System;
 using FinancesAPI.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
